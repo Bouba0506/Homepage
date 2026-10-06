@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--f-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--f-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ------------------------------------------------------------------
+   The three inputs. Registered so they interpolate: changing --h
+   sweeps the entire page through the colour wheel in one motion
+   instead of snapping.
+------------------------------------------------------------------ */
+@property --h  { syntax: "<number>";     inherits: true; initial-value: 22; }
+@property --s  { syntax: "<percentage>"; inherits: true; initial-value: 96%; }
+@property --dl { syntax: "<number>";     inherits: true; initial-value: 0; }
+
+/* ------------------------------------------------------------------
+   Everything else is derived. No colour on this page is authored
+   independently of the jacket's own hue.
+------------------------------------------------------------------ */
+.theme {
+  --bg-hot:  hsl(calc(var(--h) - 8)  var(--s) calc(51% + var(--dl) * 1%));
+  --bg-mid:  hsl(calc(var(--h) + 10) var(--s) calc(56% + var(--dl) * 1%));
+  --bg-warm: hsl(calc(var(--h) + 32) var(--s) calc(61% + var(--dl) * 1%));
+  --bg-deep: hsl(calc(var(--h) + 2)  var(--s) calc(45% + var(--dl) * 1%));
+
+  --accent:        hsl(var(--h) var(--s) calc(53% + var(--dl) * 1%));
+  --accent-bright: hsl(calc(var(--h) + 16) var(--s) calc(62% + var(--dl) * 1%));
+  --accent-veil:   hsl(calc(var(--h) + 16) var(--s) calc(62% + var(--dl) * 1%) / 0.20);
+  --on-accent:     hsl(var(--h) 74% 12%);
+
+  --panel-top:  hsl(calc(var(--h) + 8)  32% 26% / 0.88);
+  --panel-bot:  hsl(calc(var(--h) - 10) 30% 11% / 0.94);
+  --panel-line: hsl(calc(var(--h) + 24) 62% 80% / 0.16);
+  --panel-glow: hsl(calc(var(--h) + 26) 96% 66% / 0.28);
+  --panel-well: hsl(calc(var(--h) + 4)  24% 30% / 0.52);
+
+  --ink:      hsl(calc(var(--h) + 20) 44% 98%);
+  --ink-soft: hsl(calc(var(--h) + 18) 26% 90% / 0.76);
+  --ink-mute: hsl(calc(var(--h) + 18) 20% 88% / 0.46);
+
+  --prod-hi:   hsl(calc(var(--h) + 14) var(--s) calc(73% + var(--dl) * 1%));
+  --prod-mid:  hsl(calc(var(--h) + 2)  var(--s) calc(55% + var(--dl) * 1%));
+  --prod-lo:   hsl(calc(var(--h) - 8)  calc(var(--s) * 0.88) calc(35% + var(--dl) * 1%));
+  --prod-deep: hsl(calc(var(--h) - 14) calc(var(--s) * 0.68) calc(19% + var(--dl) * 1%));
+
+  color: var(--ink);
+  transition:
+    --h  640ms cubic-bezier(0.65, 0, 0.35, 1),
+    --s  640ms cubic-bezier(0.65, 0, 0.35, 1),
+    --dl 640ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: #170c04;
+  }
+  ::selection {
+    background: var(--accent-bright, #ff8a3d);
+    color: var(--on-accent, #180a02);
+  }
+  :focus-visible {
+    outline: 2px solid hsl(0 0% 100% / 0.85);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* Full-bleed mesh built from four stops of one hue. */
+  .stage {
+    background:
+      radial-gradient(105% 78% at 6% 0%, var(--bg-hot) 0%, transparent 62%),
+      radial-gradient(95% 76% at 100% 20%, var(--bg-mid) 0%, transparent 64%),
+      radial-gradient(125% 95% at 90% 100%, var(--bg-warm) 0%, transparent 60%),
+      radial-gradient(90% 72% at 0% 100%, var(--bg-deep) 0%, transparent 62%),
+      var(--bg-mid);
+  }
+
+  .panel {
+    background: linear-gradient(157deg, var(--panel-top) 0%, var(--panel-bot) 100%);
+    box-shadow:
+      inset 0 1px 0 var(--panel-line),
+      inset 0 0 0 1px hsl(0 0% 100% / 0.05),
+      0 48px 100px -34px hsl(var(--h) 80% 7% / 0.6),
+      0 0 140px -24px var(--panel-glow);
+    backdrop-filter: blur(3px);
+  }
+
+  .well {
+    background: var(--panel-well);
+    box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.07);
+  }
+
+  .cta {
+    background: var(--accent-bright);
+    color: var(--on-accent);
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.4),
+      0 14px 34px -12px var(--accent-bright);
+  }
+  .cta:hover {
+    background: var(--accent);
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.4),
+      0 18px 40px -10px var(--accent-bright);
+  }
+
+  .spec {
+    color: var(--ink-mute);
+  }
+  .spec > * + *::before {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    margin: 0 0.85em -0.05em 0;
+    background: currentColor;
+    opacity: 0.5;
+  }
+}
+
+@utility no-bar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Load sequence: one orchestrated rise, not scattered effects. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-11px);
+  }
+}
+
+.rise {
+  animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The garment drops in, then keeps breathing. One declaration, because a
+   second class setting `animation` would replace this outright. */
+.enter-float {
+  animation:
+    drop-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both,
+    float 7s ease-in-out 1.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme {
+    transition-duration: 1ms;
+  }
+  .rise,
+  .enter-float {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+  }
+}
